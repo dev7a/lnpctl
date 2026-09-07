@@ -1,8 +1,11 @@
 # Local Network Privacy Control
 
+> **Very experimental. Run it at your own risk and peril.**
+> This edits a private macOS configuration file. A bug, a wrong selection, or a macOS update could break network access or damage settings. Backups and validation checks are not a guarantee. Back up your Mac first, and try a disposable VM before a machine you depend on. If you cannot afford to troubleshoot Recovery, do not run this.
+
 Select and remove stale macOS Local Network permission entries using a keyboard-driven table. Prepare a backup during normal use, apply the change from Recovery, and restore a selected backup if needed.
 
-This native Objective-C utility is intended for Apple silicon Macs. It uses Apple's system libraries, including ncurses; the executable needs no Python, Homebrew, or additional runtime. Building requires Xcode or Command Line Tools. The current build targets macOS 15 or later; the permission-store workflow is validated on **macOS 27 beta 7**, not every supported deployment version. See [validation](docs/validation.md).
+lnpctl is an Objective-C tool for Apple silicon Macs. Building requires Xcode or Command Line Tools. The executable uses Apple's system libraries, including ncurses, and needs no Python or Homebrew to run. It targets macOS 15 or later. The permission-store workflow has only been tested on macOS 27 beta 7; that does not establish support for other versions. See [validation](docs/validation.md).
 
 ## Demo
 
@@ -43,7 +46,7 @@ Application names are derived from the recorded `.app` path when available; othe
 
 ## Prepare and apply
 
-[Illustrated Recovery guide](docs/recovery-walkthrough.md) · [60-second Recovery walkthrough](docs/media/recovery/lnpctl-recovery.mp4) — actual Tart screenshots from startup options through mounting Data, applying a prepared cleanup, and rebooting.
+[Illustrated Recovery guide](docs/recovery-walkthrough.md) · [60-second Recovery walkthrough](docs/media/recovery/lnpctl-recovery.mp4). Tart screenshots from startup options through mounting Data, applying a prepared cleanup, and rebooting.
 
 1. Close applications whose permissions you intend to clean up and close System Settings.
 2. Run `sudo ./build/lnpctl`, select the known unwanted entries, press Enter to review them, then `p` to prepare.
@@ -87,7 +90,7 @@ Use `--backups DIRECTORY` for a custom backup parent. This leaves existing backu
 
 Leave SIP enabled. Safe Mode did not permit writes in our tests. Recovery entry and FileVault authentication are manual; this utility does not change startup security or automate rebooting.
 
-The helper identifies the Data volume by its UUID, verifies the prepared change, and refuses to write the currently booted Data volume. If the source or its metadata changed after preparation, it refuses the cleanup. Return to normal macOS and prepare a fresh backup; do not force an old plan onto the changed store.
+The tool identifies the Data volume by its UUID, verifies the prepared change, and refuses to write the currently booted Data volume. If the source or its metadata changed after preparation, it refuses the cleanup. Return to normal macOS and prepare a fresh backup; do not force an old plan onto the changed store.
 
 ## Restore a backup
 
@@ -104,7 +107,7 @@ Restore replaces the entire main NetworkExtension plist, so it also reverts late
 ## Noninteractive commands
 
 ```sh
-# Read-only inventory; JSON includes immutable selection tokens.
+# Read-only inventory; JSON includes tokens tied to this exact snapshot.
 ./build/lnpctl list --json
 
 # Prepare explicitly selected tokens from that exact scan.
@@ -133,7 +136,7 @@ sudo ./build/lnpctl setup-recovery
 - The replacement preserves ownership, mode, extended attributes, and ACLs. Files with filesystem flags or multiple hard links are rejected. The replacement is written and synced separately, checked again, then renamed over the offline store.
 - Checksums detect corruption; they are not protection against someone who can rewrite the root-owned backup and executable. A backup contains private application and configuration information.
 
-This works with the serialized private file `/Library/Preferences/com.apple.networkextension.plist`, using private CoreFoundation UID inspection functions. It does not edit TCC or use a supported Apple reset API. Unknown schema or serialization changes are grounds for refusal. This project contains the source so the operation can be inspected and rebuilt; each backup stages the executable.
+This works with the serialized private file `/Library/Preferences/com.apple.networkextension.plist`, using private CoreFoundation UID inspection functions. It does not edit TCC or use a supported Apple reset API. Unknown schema or serialization changes are grounds for refusal. Read the source before trusting it with your settings. Each backup includes the executable that prepared it.
 
 ## Tests
 
@@ -141,4 +144,4 @@ This works with the serialized private file `/Library/Preferences/com.apple.netw
 make test
 ```
 
-The standard-library test suite checks archive preservation, cross-user selection, stale tokens, malformed inputs, and real ncurses keyboard behavior in pseudo-terminals. Filesystem and Recovery validation are described in [validation](docs/validation.md). Test scripts that write a store belong in an owned disposable VM or its dedicated test disk image.
+The standard-library test suite checks archive preservation, cross-user selection, stale tokens, malformed inputs, and real ncurses keyboard behavior in pseudo-terminals. Filesystem and Recovery validation are described in [validation](docs/validation.md). Test scripts that write a store belong in a disposable VM you control or its dedicated test disk image.
