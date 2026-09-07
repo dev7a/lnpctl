@@ -1,0 +1,9 @@
+/build/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Local backups and credentials
+/backups/
+.env
+.env.*

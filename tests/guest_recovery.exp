@@ -1,0 +1,66 @@
+#!/usr/bin/expect -f
+# Exercise the public Recovery menu in a real PTY on a dedicated guest test volume.
+set timeout 10
+if {$argc != 3} { puts stderr "usage: guest_recovery.exp executable backup-parent case"; exit 2 }
+lassign $argv binary base scenario
+if {![string match "/Volumes/LNPCTL-Test/*" $base]} { puts stderr "expected the dedicated test volume"; exit 2 }
+
+proc see {pattern} {
+    expect {
+        -re $pattern { return }
+        timeout { puts stderr "timed out waiting for: $pattern"; exit 1 }
+        eof { puts stderr "unexpected exit waiting for: $pattern"; exit 1 }
+    }
+}
+if {[file tail $binary] eq "lnpctl-recovery"} {
+    spawn -noecho $binary
+} else {
+    spawn -noecho $binary recovery $base
+}
+see {Backup number, or q to quit: }
+if {$scenario eq "cancel"} {
+    send -- "999\r"
+    see {Choose a valid backup number.}
+    see {Backup number, or q to quit: }
+}
+send -- "1\r"
+if {$scenario eq "foreign"} {
+    see {Choose a valid backup number.}
+    see {Backup number, or q to quit: }
+    send -- "Q\r"
+} elseif {$scenario eq "snapshot"} {
+    see {r = restore, b = back, q = quit: }
+    send -- "a\r"
+    see {Choose one of the displayed actions.}
+    see {Backup number, or q to quit: }
+    send -- "Q\r"
+} else {
+    see {a = apply cleanup, r = restore, b = back, q = quit: }
+    if {$scenario eq "cancel"} {
+        send -- "B\r"
+        see {Backup number, or q to quit: }
+        send -- "Q\r"
+    } elseif {$scenario eq "apply" || $scenario eq "apply_cancel"} {
+        send -- [expr {$scenario eq "apply" ? "A\r" : "a\r"}]
+        see {Apply this prepared cleanup\? \[y/N\] }
+        send -- [expr {$scenario eq "apply" ? "Y\r" : "n\r"}]
+    } elseif {$scenario eq "restore"} {
+        send -- "R\r"
+        see {Restore this backup\? \[y/N\] }
+        send -- "YES\r"
+    } else { puts stderr "unknown case"; exit 2 }
+}
+if {$scenario eq "apply"} {
+    see {Cleanup completed and verified.}
+} elseif {$scenario eq "restore"} {
+    see {Restore completed and verified.}
+} else {
+    see {Cancelled; nothing changed.}
+}
+expect {
+    eof {}
+    timeout { puts stderr "process did not exit"; exit 1 }
+}
+set result [wait]
+if {[lindex $result 2] != 0 || [lindex $result 3] != 0} { puts stderr "process failed: $result"; exit 1 }
+puts "PASS Recovery menu: $scenario"
