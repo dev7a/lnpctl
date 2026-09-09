@@ -705,7 +705,7 @@ static void applyOrRestore(NSString *action, NSString *backup, NSString *root, B
 }
 
 static void usage(void) {
-    puts("lnpctl 0.1.3 — selective Local Network cleanup\n\n"
+    puts("lnpctl " LNP_VERSION " — selective Local Network cleanup\n\n"
          "  sudo lnpctl                         Open the entry picker\n"
          "  sudo lnpctl select [--volume ROOT] [--backups DIRECTORY]\n"
          "  lnpctl list [--volume ROOT] [--json]\n"

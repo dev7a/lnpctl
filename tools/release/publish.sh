@@ -45,4 +45,4 @@ for a in assets:
 PYASSETS
 # Recheck the moving tag after the upload as well.
 [[ "$(gh api "repos/$GH_REPO/commits/$RELEASE_TAG" --jq .sha)" == "$RELEASE_SHA" ]] || exit 1
-gh release edit "$RELEASE_TAG" --draft=false --latest
+gh release edit "$RELEASE_TAG" --draft=false
