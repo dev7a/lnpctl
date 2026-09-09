@@ -64,11 +64,31 @@ echo 'PASS prepare does not write the live store'
 /bin/bash "$(dirname "$0")/guest_trust.sh" "$lnp_binary" "$lnp_token" "$lnp_plan"
 [[ $(checksum "$lnp_launcher") == "$(checksum "$lnp_binary")" ]]
 [[ $(stat -f '%u:%g:%OLp' "$lnp_launcher") == 0:0:700 ]]
-[[ $(xattr -p dev.alessandrobologna.lnpctl.recovery "$lnp_launcher") == 1 ]]
+[[ $(xattr -p com.dev7a.lnpctl.recovery "$lnp_launcher") == 1 ]]
 "$lnp_binary" setup-recovery --volume "$lnp_volume" --backups "$lnp_backups"
 [[ $(checksum "$lnp_launcher") == "$(checksum "$lnp_binary")" ]]
 expect_failure 'requires an interactive terminal' "$lnp_launcher" </dev/null
 echo 'PASS stable launcher, repeat setup and noninteractive refusal'
+
+# Migrate the old namespace even when the executable bytes already match.
+xattr -d com.dev7a.lnpctl.recovery "$lnp_launcher"
+xattr -w dev.alessandrobologna.lnpctl.recovery 1 "$lnp_launcher"
+"$lnp_binary" setup-recovery --volume "$lnp_volume" --backups "$lnp_backups"
+[[ $(xattr -p com.dev7a.lnpctl.recovery "$lnp_launcher") == 1 ]]
+[[ $(xattr "$lnp_launcher") == com.dev7a.lnpctl.recovery ]]
+[[ $(checksum "$lnp_launcher") == "$(checksum "$lnp_binary")" ]]
+[[ $(checksum "$lnp_plan/lnpctl") == "$(checksum "$lnp_binary")" ]]
+
+# Legacy recognition must not permit extra metadata on a foreign file.
+xattr -d com.dev7a.lnpctl.recovery "$lnp_launcher"
+xattr -w dev.alessandrobologna.lnpctl.recovery 1 "$lnp_launcher"
+xattr -w org.example.unexpected marker "$lnp_launcher"
+expect_failure 'unexpected file' "$lnp_binary" setup-recovery --volume "$lnp_volume" --backups "$lnp_backups"
+[[ $(xattr -p org.example.unexpected "$lnp_launcher") == marker ]]
+xattr -d org.example.unexpected "$lnp_launcher"
+"$lnp_binary" setup-recovery --volume "$lnp_volume" --backups "$lnp_backups"
+[[ $(xattr "$lnp_launcher") == com.dev7a.lnpctl.recovery ]]
+echo 'PASS legacy launcher marker migration preserves backups and rejects extra metadata'
 
 # Updating the marked launcher must not replace the binary inside any backup.
 printf 'previous launcher' > "$lnp_launcher"

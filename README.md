@@ -1,7 +1,7 @@
 # Local Network Privacy Control
 
 > **Very experimental. Run it at your own risk and peril.**
-> This edits a private macOS configuration file. A bug, a wrong selection, or a macOS update could break network access or damage settings. Backups and validation checks are not a guarantee. Back up your Mac first, and try a disposable VM before a machine you depend on. If you cannot afford to troubleshoot Recovery, do not run this.
+> This uses private CoreFoundation APIs and directly edits an undocumented macOS configuration format. A bug, a wrong selection, or a macOS update could break network access or damage settings. Backups and validation checks are not a guarantee. Back up your Mac first, and try a disposable VM before a machine you depend on. If you cannot afford to troubleshoot Recovery, do not run this.
 
 Select and remove stale macOS Local Network permission entries using a keyboard-driven table. Prepare a backup during normal use, apply the change from Recovery, and restore a selected backup if needed.
 
@@ -136,7 +136,7 @@ sudo ./build/lnpctl setup-recovery
 - The replacement preserves ownership, mode, extended attributes, and ACLs. Files with filesystem flags or multiple hard links are rejected. The replacement is written and synced separately, checked again, then renamed over the offline store.
 - Checksums detect corruption; they are not protection against someone who can rewrite the root-owned backup and executable. A backup contains private application and configuration information.
 
-This works with the serialized private file `/Library/Preferences/com.apple.networkextension.plist`, using private CoreFoundation UID inspection functions. It does not edit TCC or use a supported Apple reset API. Unknown schema or serialization changes are grounds for refusal. Read the source before trusting it with your settings. Each backup includes the executable that prepared it.
+This works with the serialized private file `/Library/Preferences/com.apple.networkextension.plist`, using the private CoreFoundation functions `_CFKeyedArchiverUIDGetValue` and `_CFKeyedArchiverUIDGetTypeID` to inspect archive references. These functions inspect the data; the tool itself removes selected rule references and rewrites the plist. Both the private APIs and the undocumented file format may change across macOS versions. It does not edit TCC or use a supported Apple reset API. Unknown schema or serialization changes are grounds for refusal. Read the source before trusting it with your settings. Each backup includes the executable that prepared it.
 
 ## Tests
 
@@ -145,3 +145,7 @@ make test
 ```
 
 The standard-library test suite checks archive preservation, cross-user selection, stale tokens, malformed inputs, and real ncurses keyboard behavior in pseudo-terminals. Filesystem and Recovery validation are described in [validation](docs/validation.md). Test scripts that write a store belong in a disposable VM you control or its dedicated test disk image.
+
+## Website
+
+The landing page, guide, and demonstration media live in [site/](site/README.md). The website has a separate Node build; no Node dependencies are needed to build or run the CLI. Account-specific deployment configuration and local credentials are excluded from Git.

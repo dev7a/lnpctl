@@ -13,7 +13,8 @@
 static NSString *const storeRelative = @"Library/Preferences/com.apple.networkextension.plist";
 static NSString *const defaultBackups = @"/Users/Shared/lnpctl/backups";
 static NSString *const recoveryName = @"lnpctl-recovery";
-static NSString *const recoveryAttribute = @"dev.alessandrobologna.lnpctl.recovery";
+static NSString *const recoveryAttribute = @"com.dev7a.lnpctl.recovery";
+static NSString *const legacyRecoveryAttribute = @"dev.alessandrobologna.lnpctl.recovery";
 static const NSUInteger maxFileSize = 64 * 1024 * 1024;
 static NSFileManager *fm;
 static NSData *executable;
@@ -425,9 +426,15 @@ static void installRecovery(NSDictionary *v, NSString *base) {
     struct stat st;
     if (!lstat(path.fileSystemRepresentation, &st)) {
         NSDictionary *oldMeta = metadata(path);
-        if (!LNPEqual(oldMeta, meta)) LNPFail(@"Recovery launcher path is occupied by an unexpected file; it was not replaced.");
+        // Upgrade only an exactly matching launcher from the previous namespace.
+        // Ownership, mode, ACL and the complete xattr set must still match.
+        NSMutableDictionary *legacyMeta = [meta mutableCopy];
+        legacyMeta[@"xattrs"] = @{legacyRecoveryAttribute: marker};
+        BOOL currentMetadata = LNPEqual(oldMeta, meta);
+        if (!currentMetadata && !LNPEqual(oldMeta, legacyMeta))
+            LNPFail(@"Recovery launcher path is occupied by an unexpected file; it was not replaced.");
         NSData *old = readFile(path);
-        if (![old isEqual:executable]) replaceStore(executable, meta, path, old, oldMeta);
+        if (![old isEqual:executable] || !currentMetadata) replaceStore(executable, meta, path, old, oldMeta);
         return;
     }
     if (errno != ENOENT) posixFail(@"Inspect Recovery launcher path");

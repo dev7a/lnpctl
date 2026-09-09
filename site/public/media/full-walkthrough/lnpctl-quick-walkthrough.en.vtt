@@ -1,0 +1,44 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:05.000
+Review Settings, then open sudo lnpctl in Ghostty.
+
+00:00:05.000 --> 00:00:08.000
+Filter with / and demo.
+
+00:00:08.000 --> 00:00:16.000
+Select the three unwanted demo apps. Keep Demo Keep unselected.
+
+00:00:16.000 --> 00:00:23.000
+Review the selection, then prepare a backup.
+
+00:00:23.000 --> 00:00:27.000
+Save the Recovery checklist. Live permissions are unchanged.
+
+00:00:27.000 --> 00:00:34.000
+Boot into Recovery. Choose Options, then Continue.
+
+00:00:34.000 --> 00:00:40.000
+Check Data in Disk Utility. It is already mounted in this VM.
+
+00:00:40.000 --> 00:00:47.000
+Open Terminal from the Utilities menu.
+
+00:00:47.000 --> 00:00:53.500
+Run the prepared lnpctl-recovery launcher. Choose backup 1.
+
+00:00:53.500 --> 00:00:59.500
+Review all three removals. Choose a to apply.
+
+00:00:59.500 --> 00:01:09.500
+Confirm with y. Cleanup completes and is verified.
+
+00:01:09.500 --> 00:01:15.500
+SIP remains enabled. Reboot into macOS.
+
+00:01:15.500 --> 00:01:17.500
+Reboot and login waits shortened.
+
+00:01:17.500 --> 00:01:27.500
+The three old entries are gone from Settings. Ghostty, Demo Keep, and Chrome remain allowed.
+
