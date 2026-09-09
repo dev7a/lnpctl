@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: CLI tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, macos-26]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Build and run archive, terminal, and CLI tests
+        run: |
+          set -euo pipefail
+          test "$(uname -m)" = arm64
+          make test
+          python3 tests/test_release.py
+      - name: Check shell syntax
+        run: |
+          set -euo pipefail
+          for script in tests/*.sh tools/release/*.sh; do
+            if [[ -f "$script" ]]; then
+              bash -n "$script"
+            fi
+          done

@@ -1,5 +1,6 @@
 #import "LNPArchive.h"
 #import "LNPUI.h"
+#import "LNPVersion.h"
 #include <sys/acl.h>
 #include <sys/attr.h>
 #include <sys/mount.h>
@@ -472,7 +473,7 @@ static void saveBackup(NSString *directory, NSDictionary *v, NSData *original, N
     if (edited) writeNew(edited, [directory stringByAppendingPathComponent:@"edited.plist"], 0600);
     writeNew(executable, [directory stringByAppendingPathComponent:@"lnpctl"], 0700);
     NSMutableDictionary *m = [@{
-        @"format": @1, @"tool_version": @"0.1.3", @"kind": sourceKind,
+        @"format": @1, @"tool_version": @LNP_VERSION, @"kind": sourceKind,
         @"created": [[NSISO8601DateFormatter new] stringFromDate:NSDate.date],
         @"volume_uuid": v[@"uuid"], @"volume_name": v[@"name"],
         @"source_sha256": LNPSHA256(original), @"executable_sha256": LNPSHA256(executable),
@@ -730,7 +731,7 @@ int main(int argc, const char **argv) { @autoreleasepool {
         BOOL launchedForRecovery = [@(argv[0]).lastPathComponent isEqual:recoveryName];
         NSString *command = argc > 1 ? @(argv[1]) : (launchedForRecovery ? @"recovery" : @"select");
         if ([command isEqual:@"--help"] || [command isEqual:@"help"] || [command isEqual:@"-h"]) { usage(); return 0; }
-        if ([command isEqual:@"--version"]) { puts("lnpctl 0.1.3"); return 0; }
+        if ([command isEqual:@"--version"]) { puts("lnpctl " LNP_VERSION); return 0; }
         NSDictionary *allowed = @{
             @"select": @[@"--volume", @"--backups"], @"list": @[@"--volume", @"--json"],
             @"prepare": @[@"--volume", @"--entry", @"--backup"],
