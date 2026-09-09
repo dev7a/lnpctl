@@ -1,7 +1,7 @@
 #!/bin/bash
 # Called only after the workflow validates the release tag and source commit.
 set -euo pipefail
-: "${RELEASE_TAG:?}" "${RELEASE_SHA:?}" "${SIGNING_IDENTITY:?}" "${APPLE_TEAM_ID:?}"
+: "${RELEASE_TAG_OBJECT:?}" "${RELEASE_TAG:?}" "${RELEASE_SHA:?}" "${SIGNING_IDENTITY:?}" "${APPLE_TEAM_ID:?}"
 : "${NOTARY_KEY_PATH:?}" "${APPLE_API_KEY_ID:?}" "${APPLE_API_ISSUER_ID:?}"
 [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || exit 1
 [[ "$(git rev-parse HEAD)" == "$RELEASE_SHA" ]] || exit 1
@@ -58,6 +58,7 @@ import json, os, subprocess
 from pathlib import Path
 receipt = {
     'tag': os.environ['RELEASE_TAG'], 'commit': os.environ['RELEASE_SHA'],
+    'tag_object': os.environ['RELEASE_TAG_OBJECT'],
     'architecture': 'arm64', 'minimum_macos': '15.0',
     'team_id': os.environ['APPLE_TEAM_ID'],
     'notarization': json.loads(Path('build/release/notary-result.json').read_text()),

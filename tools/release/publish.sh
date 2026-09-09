@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-: "${RUNNER_TEMP:?}" "${GH_TOKEN:?}" "${GH_REPO:?}" "${RELEASE_TAG:?}" "${RELEASE_SHA:?}"
+: "${RELEASE_TAG_OBJECT:?}" "${RUNNER_TEMP:?}" "${GH_TOKEN:?}" "${GH_REPO:?}" "${RELEASE_TAG:?}" "${RELEASE_SHA:?}"
 [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || exit 1
 asset="lnpctl-${RELEASE_TAG#v}-macos-arm64.dmg"
 python3 - <<'PY'
@@ -12,10 +12,12 @@ name = f'lnpctl-{tag[1:]}-macos-arm64.dmg'
 assert {f.name for f in p.iterdir()} == {name, 'SHA256SUMS', 'release.json'}
 r = json.loads((p / 'release.json').read_text())
 assert r['tag'] == tag and r['commit'] == os.environ['RELEASE_SHA']
+assert r['tag_object'] == os.environ['RELEASE_TAG_OBJECT']
 assert r['notarization']['status'] == 'Accepted'
 assert (p / 'SHA256SUMS').read_text() == hashlib.sha256((p / name).read_bytes()).hexdigest() + '  ' + name + '\n'
 PY
-# Resolve the tag again immediately before publication, including annotated tags.
+# Require the same verified annotated tag object, not only the same peeled commit.
+[[ "$(gh api "repos/$GH_REPO/git/ref/tags/$RELEASE_TAG" --jq .object.sha)" == "$RELEASE_TAG_OBJECT" ]] || exit 1
 remote_sha="$(gh api "repos/$GH_REPO/commits/$RELEASE_TAG" --jq .sha)"
 [[ "$remote_sha" == "$RELEASE_SHA" ]] || exit 1
 # Listing errors must fail rather than being mistaken for an absent release.
@@ -44,5 +46,6 @@ for a in assets:
     assert a['size'] == (Path('release-assets') / a['name']).stat().st_size
 PYASSETS
 # Recheck the moving tag after the upload as well.
+[[ "$(gh api "repos/$GH_REPO/git/ref/tags/$RELEASE_TAG" --jq .object.sha)" == "$RELEASE_TAG_OBJECT" ]] || exit 1
 [[ "$(gh api "repos/$GH_REPO/commits/$RELEASE_TAG" --jq .sha)" == "$RELEASE_SHA" ]] || exit 1
 gh release edit "$RELEASE_TAG" --draft=false
