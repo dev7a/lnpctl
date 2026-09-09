@@ -6,7 +6,7 @@ SOURCES = src/lnpctl.m src/LNPArchive.m src/LNPUI.m
 .PHONY: all test clean
 all: build/lnpctl
 
-build/lnpctl: $(SOURCES) src/LNPArchive.h src/LNPUI.h
+build/lnpctl: $(SOURCES) src/LNPArchive.h src/LNPUI.h src/LNPVersion.h
 	mkdir -p build
 	$(CC) $(CFLAGS) $(SOURCES) $(LDLIBS) -o $@
 
@@ -18,7 +18,7 @@ build/tui-harness: tests/tui_harness.m src/LNPUI.m src/LNPUI.h
 	mkdir -p build
 	$(CC) $(CFLAGS) tests/tui_harness.m src/LNPUI.m $(LDLIBS) -o $@
 
-build/cli-harness: tests/cli_harness.m $(SOURCES) src/LNPArchive.h src/LNPUI.h
+build/cli-harness: tests/cli_harness.m $(SOURCES) src/LNPArchive.h src/LNPUI.h src/LNPVersion.h
 	mkdir -p build
 	$(CC) $(CFLAGS) tests/cli_harness.m src/LNPArchive.m src/LNPUI.m $(LDLIBS) -o $@
 

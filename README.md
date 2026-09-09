@@ -149,3 +149,9 @@ The standard-library test suite checks archive preservation, cross-user selectio
 ## Website
 
 The landing page, guide, and demonstration media live in [site/](site/README.md). The website has a separate Node build; no Node dependencies are needed to build or run the CLI. Account-specific deployment configuration and local credentials are excluded from Git.
+
+## CI and distribution
+
+GitHub Actions runs the CLI tests on macOS 15 and 26. Version tags can produce a Developer ID signed, notarized DMG once the signing environment is configured; see [release setup](docs/releases.md). Downloads remain private while this repository is private.
+
+The static website can deploy from `main` to GitHub Pages. See [Pages setup](docs/github-pages.md) for the build, publishing permissions, and site URL.
