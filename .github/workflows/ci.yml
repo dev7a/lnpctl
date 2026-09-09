@@ -33,6 +33,7 @@ jobs:
           test "$(uname -m)" = arm64
           make test
           python3 tests/test_release.py
+          python3 tests/test_release_tag.py
       - name: Check shell syntax
         run: |
           set -euo pipefail
