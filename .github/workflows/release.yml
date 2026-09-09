@@ -51,9 +51,12 @@ jobs:
           git merge-base --is-ancestor "$sha" refs/remotes/origin/main
           version="$(git show "$sha:src/LNPVersion.h" | sed -n 's/^#define LNP_VERSION "\([^"]*\)"$/\1/p')"
           [[ "$TAG" == "v$version" ]] || exit 1
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-          echo "sha=$sha" >> "$GITHUB_OUTPUT"
-          echo "tag_object=$(git rev-parse "refs/tags/$TAG")" >> "$GITHUB_OUTPUT"
+          tag_object="$(git rev-parse "refs/tags/$TAG")"
+          {
+            echo "tag=$TAG"
+            echo "sha=$sha"
+            echo "tag_object=$tag_object"
+          } >> "$GITHUB_OUTPUT"
 
   notarize:
     needs: preflight
