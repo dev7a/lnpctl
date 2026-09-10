@@ -9,13 +9,11 @@ lnpctl is an Objective-C tool for Apple silicon Macs. Building requires Xcode or
 
 ## Demo
 
-[Watch the 22-second walkthrough](docs/media/lnpctl-demo.mp4): select an entry, filter, add another, and review the full selection.
+Watch the complete cleanup workflow: select stale entries, prepare a backup, apply the cleanup in Recovery, and verify the result after reboot.
 
-![Picker with synthetic application entries](docs/media/01-picker.png)
+https://github.com/user-attachments/assets/736ebd32-908b-4f92-ab11-a8c2b96e6066
 
-[Filtering with a hidden selection](docs/media/03-filter.png) · [Reviewing both selections](docs/media/05-review.png)
-
-These images render the real picker framebuffer with fictional entries and added captions. The walkthrough ends after confirming the selection; it does not create a backup or demonstrate a Recovery write. See [media reproduction notes](tools/demo/README.md).
+Recorded in a disposable Tart VM, with English narration. Pauses are cut, navigation is accelerated, and key steps are enlarged. [Watch with subtitles on the site](https://dev7a.github.io/lnpctl/#tutorial).
 
 ## Build and open
 
@@ -46,7 +44,7 @@ Application names are derived from the recorded `.app` path when available; othe
 
 ## Prepare and apply
 
-[Illustrated Recovery guide](docs/recovery-walkthrough.md) · [60-second Recovery walkthrough](docs/media/recovery/lnpctl-recovery.mp4). Tart screenshots from startup options through mounting Data, applying a prepared cleanup, and rebooting.
+[Illustrated Recovery guide](docs/recovery-walkthrough.md) · [Full cleanup walkthrough](https://dev7a.github.io/lnpctl/#tutorial). Tart screenshots from startup options through mounting Data, applying a prepared cleanup, and rebooting.
 
 1. Close applications whose permissions you intend to clean up and close System Settings.
 2. Run `sudo ./build/lnpctl`, select the known unwanted entries, press Enter to review them, then `p` to prepare.
