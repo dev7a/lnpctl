@@ -6,7 +6,7 @@ import { ArrowUpRight, Copy, Check, Printer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 const source = 'https://github.com/dev7a/lnpctl';
-const chapters = [['before','Before you begin'],['build','Build and open'],['select','Select and prepare'],['recovery','Enter Recovery'],['apply','Apply and reboot'],['restore','Restore a backup'],['help','Troubleshooting and development']];
+const chapters = [['before','Before you begin'],['build','Build and open'],['select','Select and prepare'],['recovery','Enter Recovery'],['apply','Apply and reboot'],['restore','Restore a backup'],['help','Troubleshooting']];
 function Contents() {
   const { setOpenMobile } = useSidebar();
   return <Sidebar className="manual-sidebar"><SidebarHeader className="px-7 pt-9 pb-4"><a href={sitePath('/')} className="brand">lnpctl<span>_</span></a><p className="text-sm text-slate-400 mt-1">Local Network Privacy Control</p><p className="rail-label">The field guide</p></SidebarHeader><SidebarContent className="px-4"><nav aria-label="Guide chapters"><SidebarMenu>{chapters.map(([id,label],i)=><SidebarMenuItem key={id}><SidebarMenuButton render={<a href={'#'+id}/>} onClick={()=>setOpenMobile(false)} className="h-auto min-h-11 py-3 px-3 text-[15px]"><span className="nav-number">{String(i+1).padStart(2,'0')}</span>{label}</SidebarMenuButton></SidebarMenuItem>)}</SidebarMenu></nav></SidebarContent><SidebarFooter className="px-7 py-7 border-t border-sidebar-border"><p className="text-[#ffac83] text-sm font-medium">Very experimental</p><p className="text-sm text-slate-400 mt-1">Use at your own risk and peril.</p><a className="flex items-center gap-2 mt-5 text-sm" href={source}>Source on GitHub <ArrowUpRight size={15}/></a></SidebarFooter></Sidebar>;
@@ -56,14 +56,8 @@ export default function Guide() {
 <aside className="warning"><h3>Restore replaces the whole main NetworkExtension plist.</h3><p>It also rolls back later changes stored in that file. It is not an undo for just the selected rows. The tool saves a restore-safety snapshot before replacing the file.</p></aside>
 <p>Current version 0.1.3 restore tests use an offline APFS test volume. A full Recovery restore and normal reboot cycle was tested with an older 0.1.0 build, not with 0.1.3.</p>
 </Section>
-<Section id="help" number="07" title="Troubleshooting and development">
+<Section id="help" number="07" title="Troubleshooting">
 <h3>The launcher path does not exist</h3><p>Check <code>ls /Volumes</code>, mount or unlock the correct Data volume, and compare the command with the checklist you saved. A custom backup location needs its own saved path.</p>
 <h3>The source changed after preparation</h3><p>Return to normal macOS and prepare a fresh backup. Do not force the old plan onto the changed store.</p>
 <h3>The tool refuses the volume, backup, or archive</h3><p>Stop and read the exact message. The tool rejects the currently booted Data volume, wrong-volume plans, tampered backups, and unsupported or ambiguous archive layouts. Do not disable SIP or change file permissions to bypass a refusal.</p>
-<h3>How this was built</h3>
-<p>lnpctl is written in Objective-C and uses Apple’s system libraries, with ncurses for the keyboard-driven interface. It builds with Xcode or Command Line Tools and needs no Python or Homebrew at runtime.</p>
-<p>Development combined automated archive, terminal, and CLI tests with offline APFS checks and full cleanup runs in disposable Tart VMs on macOS 26.6.2 and macOS 27 beta 7. The cleanup has also been used successfully on the developer’s own Mac.</p>
-<p>The walkthrough was recorded in a VM: selection in Ghostty, application in Recovery, and verification after reboot. SIP stayed enabled. The edited video adds narration, subtitles, and close-ups of the key steps.</p>
-<p>These successful runs do not establish safety on every Mac or macOS version. FileVault unlock and a full Recovery restore cycle with 0.1.3 are not covered by the recorded tests.</p>
-<p><a href={source+'/blob/main/docs/validation.md'}>Read the development test record</a> or <a href={source+'/blob/main/docs/recovery-walkthrough.md'}>see the Recovery screenshots</a>. Repository access is required.</p>
 </Section><footer className="end-note">lnpctl v0.1.3 · Guide updated September 9, 2026.<br/>Experimental software. No supported Apple reset API is used. <a href={source}>Read the source before trusting it with your settings.</a></footer></main></SidebarInset></SidebarProvider>; }
