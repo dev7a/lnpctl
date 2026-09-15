@@ -1,8 +1,8 @@
 # Validation
 
-## Current version: 0.1.3
+## Current version: 0.1.4
 
-The current implementation has been tested on Apple silicon with **macOS 27 beta 7 (26A5421a)**. The build targets macOS 15 or later, but the permission-store workflow has not been validated on every supported deployment version.
+The restore implementation in this release passed the offline APFS integration suite on Apple silicon with **macOS 26.6.1 (25G76)**. Earlier Recovery testing used **macOS 27 beta 7 (26A5421a)**. The build targets macOS 15 or later, but the permission-store workflow has not been validated on every supported deployment version.
 
 Run the local checks with:
 
