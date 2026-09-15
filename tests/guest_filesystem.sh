@@ -154,6 +154,38 @@ lnp_snapshot=${lnp_snapshots[0]}
 "$lnp_plan/lnpctl" restore "$lnp_plan" --volume "$lnp_volume" --yes
 echo 'PASS restore-safety backup can itself restore the previous state'
 
+# A damaged current store must not prevent restoration of a valid backup.
+# Retain its exact bytes and metadata, but do not allow it as a restore input.
+for lnp_damage in truncated newer-schema; do
+    if [[ "$lnp_damage" == truncated ]]; then
+        printf 'bplist00truncated' > "$lnp_store"
+    else
+        printf '<?xml version="1.0"?><plist version="1.0"><dict><key>FutureSchema</key><integer>999</integer></dict></plist>' > "$lnp_store"
+    fi
+    lnp_damaged_hash=$(checksum "$lnp_store")
+    lnp_damaged_meta=$(metadata)
+    "$lnp_plan/lnpctl" restore "$lnp_plan" --volume "$lnp_volume" --yes
+    [[ $(checksum "$lnp_store") == "$lnp_original_hash" ]]
+    [[ $(metadata) == "$lnp_original_meta" ]]
+    lnp_found_snapshot=''
+    for lnp_candidate in "$lnp_backups"/restore-safety-*; do
+        if [[ $(checksum "$lnp_candidate/original.plist") == "$lnp_damaged_hash" ]]; then
+            lnp_found_snapshot=$lnp_candidate
+        fi
+    done
+    [[ -n "$lnp_found_snapshot" ]]
+    [[ $(plutil -extract source_sha256 raw "$lnp_found_snapshot/manifest.plist") == "$lnp_damaged_hash" ]]
+    # Source metadata survives the damage and restoration in this fixture.
+    [[ "$lnp_damaged_meta" == "$lnp_original_meta" ]]
+    if "$lnp_plan/lnpctl" restore "$lnp_found_snapshot" --volume "$lnp_volume" --yes; then
+        echo 'An unreadable safety snapshot must not be accepted as a restore input.' >&2
+        exit 1
+    fi
+    [[ $(checksum "$lnp_store") == "$lnp_original_hash" ]]
+    [[ $(metadata) == "$lnp_original_meta" ]]
+done
+echo 'PASS restores over unreadable current stores while retaining safety bytes and strict restore inputs'
+
 cp -R "$lnp_plan" "$lnp_backups/bad-checksum"
 printf '\ncorrupt' >> "$lnp_backups/bad-checksum/edited.plist"
 expect_failure 'Edited backup checksum mismatch' "$lnp_plan/lnpctl" apply "$lnp_backups/bad-checksum" --volume "$lnp_volume" --yes

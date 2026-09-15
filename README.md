@@ -100,7 +100,9 @@ Repeat the shutdown, Recovery and volume-unlock steps above, then run the same l
 
 Choose the backup number, review it, enter `r`, and confirm with `y`. After success, run `reboot` and verify the settings. Restore-safety snapshots offer restore only.
 
-Restore replaces the entire main NetworkExtension plist, so it also reverts later permission or configuration changes represented in that file. Before replacement, the current state is saved and verified as a separate `restore-safety-...` backup. Those snapshots appear in the backup list and can themselves be restored.
+Restore replaces the entire main NetworkExtension plist, so it also reverts later permission or configuration changes represented in that file. Before replacement, the current state is saved and verified as a separate `restore-safety-...` backup. A corrupt or unsupported current archive can be preserved this way without blocking restoration of a valid backup. Safety snapshots can themselves be restored only if their archive passes the normal validation; unreadable snapshots retain the original bytes for diagnosis.
+
+Each backup runs its own staged executable. Restore fixes in a newer build apply to backups prepared with that build; do not replace executables inside older backups.
 
 ## Noninteractive commands
 
@@ -153,3 +155,7 @@ The landing page, guide, and demonstration media live in [site/](site/README.md)
 GitHub Actions runs the CLI tests on macOS 15 and 26. Version tags can produce a Developer ID signed, notarized DMG once the signing environment is configured; see [release setup](docs/releases.md). Downloads remain private while this repository is private.
 
 The static website can deploy from `main` to GitHub Pages. See [Pages setup](docs/github-pages.md) for the build, publishing permissions, and site URL.
+
+## License
+
+lnpctl is licensed under the [MIT License](LICENSE). Third-party components retain their respective [licenses and notices](site/public/THIRD_PARTY_NOTICES.txt).

@@ -491,7 +491,7 @@ static void saveBackup(NSString *directory, NSDictionary *v, NSData *original, N
     syncDirectory(directory); syncDirectory(parent);
 }
 
-static NSDictionary *loadBackup(NSString *directory) {
+static NSDictionary *verifyBackup(NSString *directory, BOOL requireReadableSnapshot) {
     privateBackup(directory);
     id m = LNPDecode(readFile([directory stringByAppendingPathComponent:@"manifest.plist"]));
     if (![m isKindOfClass:NSDictionary.class] || ![m[@"format"] isEqual:@1] ||
@@ -502,7 +502,9 @@ static NSDictionary *loadBackup(NSString *directory) {
     validateMetadata(m[@"metadata"]);
     NSData *original = readFile([directory stringByAppendingPathComponent:@"original.plist"]);
     if (![LNPSHA256(original) isEqual:m[@"source_sha256"]]) LNPFail(@"Original backup checksum mismatch.");
-    LNPEntries(original, nil);
+    // A safety copy must preserve even a corrupt or newer-schema current store.
+    // Only its post-save verification may skip parsing; restore inputs stay strict.
+    if (requireReadableSnapshot || [m[@"kind"] isEqual:@"cleanup"]) LNPEntries(original, nil);
     NSData *binary = readFile([directory stringByAppendingPathComponent:@"lnpctl"]);
     if (![LNPSHA256(binary) isEqual:m[@"executable_sha256"]]) LNPFail(@"Staged executable checksum mismatch.");
     if ([m[@"kind"] isEqual:@"cleanup"]) {
@@ -522,6 +524,10 @@ static NSDictionary *loadBackup(NSString *directory) {
             if (![row[key] isEqual:byToken[row[@"token"]][key]]) LNPFail(@"Selected-entry description does not match the original.");
     } else if ([m[@"removed"] count]) LNPFail(@"A restore-safety snapshot cannot contain a removal selection.");
     return m;
+}
+
+static NSDictionary *loadBackup(NSString *directory) {
+    return verifyBackup(directory, YES);
 }
 
 static void printPlan(NSString *directory, NSDictionary *m) {
@@ -685,7 +691,7 @@ static void applyOrRestore(NSString *action, NSString *backup, NSString *root, B
     if (restoring) {
         safety = [backup.stringByDeletingLastPathComponent stringByAppendingPathComponent:newName(@"restore-safety")];
         saveBackup(safety, v, current, currentMeta, nil, nil, @"snapshot");
-        loadBackup(safety);
+        verifyBackup(safety, NO);
     }
     NSString *receiptName = newName(action);
     NSMutableDictionary *receipt = [@{@"action": action, @"volume_uuid": v[@"uuid"],

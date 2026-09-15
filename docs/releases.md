@@ -6,6 +6,18 @@ The Release workflow builds an Apple Silicon executable for macOS 15 or later, s
 
 Use GitHub-hosted runners. Create a `release` environment and allow deployments from the `main` branch and version tags matching `v*`. The main rule permits manual dispatch; the tag rule permits tag-push releases. Protect those tags against modification and restrict who can create them. An optional required reviewer can control access to signing credentials. Release scripts execute the tagged source, so tag creation is a privileged maintainer action.
 
+### Repository protections
+
+The repository uses three active rulesets:
+
+- `main` requires a pull request, verified commit signatures, resolved review threads, and the GitHub Actions checks `CLI tests (macos-15)` and `CLI tests (macos-26)` against the current base. Deletion and force pushes are blocked, with no bypass actors.
+- Version tags matching `v*` can be created only by the designated release owner, `alessandrobologna`.
+- A separate rule blocks updates and deletion of existing version tags for everyone, including the release owner. Release a new version to correct an existing release.
+
+The sole maintainer cannot approve their own PR, so GitHub's required human approval count is zero. Exact-head Codex review remains a maintainer merge requirement; a clean review is not permission to skip failing CI. When adding maintainers, configure an independent required reviewer as well. Repository administrators can edit rulesets, so these protections do not defend against a compromised administrator account.
+
+Before public releases, configure the `release` environment with `alessandrobologna` as a required reviewer and disable administrator bypass. With one maintainer, leave self-review prevention off so the owner can explicitly approve their own release; enable it when an independent release reviewer is available. Inspect the tag, commit, and workflow before approving access to signing credentials. GitHub Team supports required environment reviewers only for public repositories, so this approval gate must be enabled when the repository becomes public. Until then, the restricted tag creator and protected `main` are the enforced controls. See [GitHub environment protection availability](https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments).
+
 Set these environment secrets through GitHub Settings or `gh secret set` reading from files or standard input. Never paste private keys into logs, source files, or issue comments.
 
 | Secret | Value |

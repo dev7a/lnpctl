@@ -23,6 +23,14 @@ The root-only integration suite is [guest_filesystem.sh](../tests/guest_filesyst
 
 ## Recovery validation
 
+### Restore regression validation (September 15, 2026)
+
+The updated restore implementation passed the full root-only filesystem integration suite on a dedicated APFS test image in a disposable macOS 26.6.1 (25G76) VM. The fixture was synthetic. Tests restored a valid backup over both truncated bytes and an unsupported plist schema, verified the restored bytes and metadata, checked that the safety snapshot retained the damaged bytes and matching checksum, and confirmed that an unreadable snapshot is still rejected as a restore input. Existing filesystem trust, tampering, stale-data, launcher, and menu checks also passed.
+
+The tested executable SHA-256 was `5ca45bfbd959fe42891fb6fcff013d0b034a0dbb078277612d93d99b0bd62eca`. These tests exercised an offline APFS volume from normal guest macOS; they did not repeat the full Recovery reboot cycle or operate on a physical Mac. Older backups retain their original executable and behavior.
+
+### Earlier Recovery cycle
+
 On September 7, 2026, version 0.1.3 completed preparation, interactive apply in macOS Recovery, and a normal reboot in a disposable Tart VM. Preparation left the source unchanged. Recovery verified the installed bytes against the prepared cleanup. After reboot, only the selected stale test entry was absent; the three retained entries had unchanged resolved identity and permission fields. SIP remained enabled and the guest booted normally.
 
 macOS may reserialize the permission store after reboot. Post-boot comparisons therefore use resolved rule fields, not byte equality or source-bound selection tokens.

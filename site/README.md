@@ -1,16 +1,16 @@
 # lnpctl guide
 
-A static tutorial for the experimental lnpctl Local Network permission cleanup tool. Source: https://github.com/dev7a/lnpctl (private).
+A static tutorial for the experimental lnpctl Local Network permission cleanup tool. Source: https://github.com/dev7a/lnpctl.
 
 Run lnpctl at your own risk and peril. It uses private CoreFoundation APIs and directly edits an undocumented macOS configuration format. The private functions are `_CFKeyedArchiverUIDGetValue` and `_CFKeyedArchiverUIDGetTypeID`; they inspect archive references, while lnpctl performs the file edits. Backups and checks do not guarantee safety.
 
 ## Develop
 
-Use Node 22.13 or later. Install with `npm ci --ignore-scripts`, then run `npm run dev`. Build with `npm run build`. The static export is in `dist/client`; Sites publishes only that directory.
+Use Node 22.13 or later. Install with `npm ci --ignore-scripts`, then run `npm run dev`. Build with `npm run build`. The static export is in `dist/client`; GitHub Pages publishes only that directory.
 
 The screenshots and videos use controlled demonstration data and a disposable Tart VM. See the tool repository's validation record for the exact test coverage.
 
-The starter's React packages are patched to 19.2.8. Remaining npm audit findings affect the retained build and development toolchain; no Node server, RSC request handler, image processor, or Cloudflare development runtime is published. Do not expose the development server or use untrusted build inputs.
+The published site is a static export; it does not deploy a Node server. Check the current lockfile with `npm audit --package-lock-only --ignore-scripts` when changing dependencies. Advisory applicability must be assessed against both the build environment and the files actually published. Do not expose the development server or use untrusted build inputs.
 
 ## Repository and deployment configuration
 
@@ -24,4 +24,10 @@ Only `dist/client` is the publishable build output. Do not publish the entire wo
 
 The migration audit checked candidate source and lockfile text, ran Gitleaks with no findings, reviewed demonstration media, and checked media metadata. The included media shows synthetic picker data or disposable VM accounts named `demo` and `admin`; UUIDs and paths visible there belong to those test environments. No host recordings, VM images, SSH keys, raw permission stores, backups, account-specific deployment bindings, or prior site Git history are included.
 
-The dependency versions and lockfile are unchanged from the existing site. This audit covers secrets and private information; it does not certify the development dependency tree as vulnerability-free. Recheck new content before publishing it.
+This publication audit covers secrets and private information; it does not certify the dependency tree as vulnerability-free. Recheck new content and dependency changes before publishing them.
+
+## Licenses
+
+The project uses the [MIT license](../LICENSE). The copied shadcn/ui components and third-party client libraries retain their own notices in [THIRD_PARTY_NOTICES.txt](public/THIRD_PARTY_NOTICES.txt). Vite copies this public file into `dist/client`, so the notices accompany the deployed site even when minification removes comments.
+
+The notice file records the installed package versions and includes the full applicable license texts, including Apache-2.0 for class-variance-authority and the Lucide/Feather notices. Refresh affected sections when updating client dependencies or copying more third-party source; preserve any additional upstream NOTICE files. Build-only dependencies are not redistributed as part of the static site.
