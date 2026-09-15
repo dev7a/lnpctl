@@ -1,8 +1,8 @@
 # Validation
 
-## Current version: 0.1.3
+## Current version: 0.1.4
 
-The current implementation has been tested on Apple silicon with **macOS 27 beta 7 (26A5421a)**. The build targets macOS 15 or later, but the permission-store workflow has not been validated on every supported deployment version.
+The restore implementation in this release passed the offline APFS integration suite on Apple silicon with **macOS 26.6.1 (25G76)**. Earlier Recovery testing used **macOS 27 beta 7 (26A5421a)**. The build targets macOS 15 or later, but the permission-store workflow has not been validated on every supported deployment version.
 
 Run the local checks with:
 
@@ -37,7 +37,7 @@ macOS may reserialize the permission store after reboot. Post-boot comparisons t
 
 The [Recovery walkthrough](recovery-walkthrough.md) shows the real navigation, launcher, confirmation, completion message, and reboot command using a controlled test entry. VM usernames, app paths, and volume identifiers shown there belong to the disposable test environment.
 
-A previous 0.1.0 build also completed a full Recovery apply → normal boot → Recovery restore → normal boot cycle, with a retained application's network connection checked. That older result is not a full restore-cycle validation of 0.1.3. Current 0.1.3 restore coverage comes from the offline APFS integration tests.
+A previous 0.1.0 build also completed a full Recovery apply → normal boot → Recovery restore → normal boot cycle, with a retained application's network connection checked. That older result is not a full restore-cycle validation of 0.1.4. Current 0.1.4 restore coverage comes from the offline APFS integration tests.
 
 ## Limits
 
