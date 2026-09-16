@@ -96,7 +96,7 @@ reboot
 
 ![Reboot command after successful cleanup](media/recovery/16-reboot-command.jpg)
 
-After login, check **System Settings → Privacy & Security → Local Network** and test the applications you kept. See the [complete checklist](../README.md#prepare-and-apply) for refusal handling and restore instructions.
+After login, check **System Settings → Privacy & Security → Local Network** and test the applications you kept. See the [complete checklist](usage.md#prepare-and-apply) for refusal handling and restore instructions.
 
 ## Capture details
 
