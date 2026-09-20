@@ -9,17 +9,17 @@ export const metadata: Metadata = {
     title: 'lnpctl — macOS Local Network permission cleanup',
     description: 'Experimental, open-source cleanup tool. Prepare changes, apply from macOS Recovery, and keep SIP enabled.',
     images: [{
-      url: 'https://dev7a.github.io/lnpctl/media/social-preview.png',
-      width: 1280,
+      url: 'https://dev7a.github.io/lnpctl/media/social-icon.png',
+      width: 640,
       height: 640,
-      alt: 'lnpctl — macOS Local Network permission cleanup. Experimental, open source, MIT.',
+      alt: 'lnpctl terminal icon',
     }],
   },
   twitter: {
-    card: 'summary_large_image',
+    card: 'summary',
     title: 'lnpctl — macOS Local Network permission cleanup',
     description: 'Experimental, open-source cleanup tool. Prepare changes, apply from macOS Recovery, and keep SIP enabled.',
-    images: ['https://dev7a.github.io/lnpctl/media/social-preview.png'],
+    images: ['https://dev7a.github.io/lnpctl/media/social-icon.png'],
   },
 };
 export default function RootLayout({ children }: { children: React.ReactNode }) {
