@@ -12,7 +12,7 @@ export const metadata: Metadata = {
       url: 'https://dev7a.github.io/lnpctl/media/social-icon.png',
       width: 640,
       height: 640,
-      alt: 'lnpctl terminal icon',
+      alt: 'lnp wordmark with three connected network nodes',
     }],
   },
   twitter: {
