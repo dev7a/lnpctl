@@ -1,11 +1,11 @@
 # Using lnpctl
 
-Install lnpctl using the [README instructions](../README.md#install), and read its safety and compatibility notes first. The examples below use `lnpctl`; substitute the path to your executable if it is not on your `PATH`, such as `"$HOME/.local/bin/lnpctl"` for the downloaded release or `./build/lnpctl` for a source build.
+Install lnpctl using the [README instructions](../README.md#install), and read its safety and compatibility notes first. Homebrew users on Apple silicon and macOS 26+ can install with `brew install --cask dev7a/tap/lnpctl`. The examples below resolve Homebrew’s installation path before invoking `sudo`. For a manual download, substitute `"$HOME/.local/bin/lnpctl"` for `"$(brew --prefix)/bin/lnpctl"`; for a source build, use `./build/lnpctl`.
 
 ## Open the picker
 
 ```sh
-sudo lnpctl
+sudo "$(brew --prefix)/bin/lnpctl"
 ```
 
 Keep the executable on a local disk. The picker reads the current permission store; opening it does not change permissions or create a backup. When you prepare a cleanup, it also stages a small Recovery launcher inside the private backup directory on the Data volume. No additional runtime is installed.
@@ -33,7 +33,7 @@ Application names are derived from the recorded `.app` path when available; othe
 [Illustrated Recovery guide](recovery-walkthrough.md) · [Full cleanup walkthrough](https://dev7a.github.io/lnpctl/#tutorial). Tart screenshots from startup options through mounting Data, applying a prepared cleanup, and rebooting.
 
 1. Close applications whose permissions you intend to clean up and close System Settings.
-2. Run `sudo lnpctl`, select the known unwanted entries, press Enter to review them, then `p` to prepare.
+2. Run `sudo "$(brew --prefix)/bin/lnpctl"`, select the known unwanted entries, press Enter to review them, then `p` to prepare.
 3. The tool prints the complete checklist below. **Save it on your phone, photograph it, or print it before shutting down.** The dated backup folder does not need to be remembered: the Recovery launcher lists backups by date and removal count. Backups default to `/Users/Shared/lnpctl/backups/` and contain the original plist, edited copy, manifest, their own executable, and `RECOVERY.txt`. Live permissions are unchanged.
 4. Save your work and choose **Apple menu → Shut Down**. Wait until the Mac is fully off.
 5. Press and hold the power button. Release it when startup options appear. Choose **Options → Continue**. If asked, choose your startup disk, then select a user and enter that user's login password. [Apple's Recovery instructions](https://support.apple.com/en-us/102518).
@@ -67,7 +67,7 @@ For custom backup locations, preparation stages the launcher inside that backup 
 Install the protected launcher and print the full checklist without repeating selection:
 
 ```sh
-sudo lnpctl setup-recovery
+sudo "$(brew --prefix)/bin/lnpctl" setup-recovery
 ```
 
 Use `--backups DIRECTORY` for a custom backup parent. This leaves existing backups and the live permission store unchanged. Use the new printed command instead of the older `/Volumes/Data/lnpctl-recovery` command; setup does not remove the old launcher or rewrite existing `RECOVERY.txt` files. Each older backup still runs its original executable, so it does not gain the new editor safeguards. Prepare a fresh cleanup with 0.1.2 or newer for those safeguards. A backup beneath a user-controlled ancestor is refused; prepare a new backup at the default location instead.
@@ -97,19 +97,19 @@ Each backup runs its own staged executable. Restore fixes in a newer build apply
 lnpctl list --json
 
 # Prepare explicitly selected tokens from that exact scan.
-sudo lnpctl prepare \
+sudo "$(brew --prefix)/bin/lnpctl" prepare \
   --entry '<token>' --entry '<another-token>' \
   --backup '/Users/Shared/lnpctl/backups/my-cleanup'
 
 # Use a different backup parent for the interactive picker.
-sudo lnpctl select --backups '/Users/Shared/lnpctl/my-backups'
+sudo "$(brew --prefix)/bin/lnpctl" select --backups '/Users/Shared/lnpctl/my-backups'
 
 # Review a backup, or enumerate backup validity.
-sudo lnpctl inspect '/Users/Shared/lnpctl/backups/my-cleanup' --json
-sudo lnpctl backups --json
+sudo "$(brew --prefix)/bin/lnpctl" inspect '/Users/Shared/lnpctl/backups/my-cleanup' --json
+sudo "$(brew --prefix)/bin/lnpctl" backups --json
 
 # Install or update the stable Recovery handoff for existing backups.
-sudo lnpctl setup-recovery
+sudo "$(brew --prefix)/bin/lnpctl" setup-recovery
 ```
 
 `--volume ROOT` explicitly chooses a mounted Data volume. Apply and restore otherwise locate the mounted volume matching the backup UUID. `--yes` skips the final apply/restore prompt for an already reviewed operation; it does not skip validation. Apply and restore require root and an offline target; preparation requires root. Read-only inventory does not require root when the store is readable.
