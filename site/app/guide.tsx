@@ -26,7 +26,8 @@ export default function Guide() {
 <Command label="Install with Homebrew">{'brew install --cask dev7a/tap/lnpctl\nlnpctl --version'}</Command>
 <p>The <a href="https://github.com/dev7a/homebrew-tap">official tap</a> installs the signed, notarized release, verifies its pinned checksum, and links <code>lnpctl</code> into Homebrew’s <code>bin</code> directory. Installation does not change permissions or set up Recovery.</p>
 <p>Close System Settings and the apps whose entries you intend to remove, then open the picker:</p>
-<Command label="Open the picker">{'sudo lnpctl'}</Command>
+<Command label="Open the picker">{'sudo "$(brew --prefix)/bin/lnpctl"'}</Command>
+<p>This resolves Homebrew’s installation path before invoking <code>sudo</code>, so it does not depend on sudo’s command search path.</p>
 <h3>Other installation options</h3>
 <p>For a manual installation, follow the <a href="https://github.com/dev7a/lnpctl#download-the-signed-release">signed DMG instructions</a>. Use <code>sudo "$HOME/.local/bin/lnpctl"</code> to open that copy.</p>
 <p>To build from source, install Xcode or Apple’s Command Line Tools, then run:</p>

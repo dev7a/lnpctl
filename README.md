@@ -76,14 +76,14 @@ make
 ./build/lnpctl --version
 ```
 
-The commands below use the Homebrew installation. For a manual download, substitute `"$HOME/.local/bin/lnpctl"` for `lnpctl`; for a source build, use `./build/lnpctl`.
+The commands below resolve Homebrew’s installation path before invoking `sudo`, so they do not depend on its command search path. For a manual download, substitute `"$HOME/.local/bin/lnpctl"` for `"$(brew --prefix)/bin/lnpctl"`; for a source build, use `./build/lnpctl`.
 
 ## Clean up entries
 
 1. **Select in normal macOS.** Close System Settings and the applications whose entries you intend to remove, then open the picker:
 
    ```sh
-   sudo lnpctl
+   sudo "$(brew --prefix)/bin/lnpctl"
    ```
 
    Use the arrow keys to move, Space to select, `/` to filter, and Enter to review. Nothing is selected automatically. A missing executable is a clue, not proof that an entry should be removed.
