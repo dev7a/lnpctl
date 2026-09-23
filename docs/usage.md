@@ -1,6 +1,6 @@
 # Using lnpctl
 
-Install lnpctl using the [README instructions](../README.md#install), and read its safety and compatibility notes first. The examples below use `lnpctl`; substitute the path to your executable if it is not on your `PATH`, such as `"$HOME/.local/bin/lnpctl"` for the downloaded release or `./build/lnpctl` for a source build.
+Install lnpctl using the [README instructions](../README.md#install), and read its safety and compatibility notes first. Homebrew users on Apple silicon and macOS 26+ can install with `brew install --cask dev7a/tap/lnpctl`. The examples below use the Homebrew command `lnpctl`; substitute the path to your executable if it is not on your `PATH`, such as `"$HOME/.local/bin/lnpctl"` for the downloaded release or `./build/lnpctl` for a source build.
 
 ## Open the picker
 

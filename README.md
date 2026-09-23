@@ -17,13 +17,38 @@ Recorded in a disposable Tart VM with narration. Pauses are cut and navigation i
 
 ## Requirements and tested coverage
 
-- **Apple silicon Mac, macOS 15 or later.** This is the build target, not a claim that every supported macOS version has been tested.
+- **Apple silicon Mac. Homebrew installation requires macOS 26 or later.** The standalone executable and source build target macOS 15+, which is not a claim that every deployment version has been tested.
 - **Administrator access and macOS Recovery** to apply or restore changes.
 - The downloaded executable needs **no Xcode, Python, or Homebrew**. It uses Apple's system libraries.
 
 The restore implementation passed offline APFS tests in a macOS 26.6.1 VM, including restoration over a damaged archive. Earlier Recovery apply testing used macOS 27 beta 7. Physical-Mac operation, FileVault unlock, and a full Recovery restore/reboot cycle for the current implementation have not been validated. See the [test record](docs/validation.md) for the exact scope.
 
 ## Install
+
+### Homebrew
+
+With [Homebrew](https://brew.sh/) installed on Apple silicon and macOS 26 or later:
+
+```sh
+brew install --cask dev7a/tap/lnpctl
+lnpctl --version
+```
+
+The [official tap](https://github.com/dev7a/homebrew-tap) installs the signed,
+notarized release and checks its pinned SHA-256 checksum. It links `lnpctl`
+into Homebrew's `bin` directory. Installation does not change permissions or
+set up Recovery.
+
+To upgrade or uninstall:
+
+```sh
+brew update
+brew upgrade --cask dev7a/tap/lnpctl
+brew uninstall --cask lnpctl
+```
+
+Uninstalling preserves backups, prepared plans, and any Recovery launcher you
+created. Upgrading does not replace the executable staged in existing backups.
 
 ### Download the signed release
 
@@ -38,7 +63,7 @@ The restore implementation passed offline APFS tests in a macOS 26.6.1 VM, inclu
    "$HOME/.local/bin/lnpctl" --version
    ```
 
-You can eject the disk image after copying. Copying the executable does not change Local Network settings or install a background service. Release downloads require repository access while the repository is private.
+You can eject the disk image after copying. Copying the executable does not change Local Network settings or install a background service.
 
 ### Build from source
 
@@ -51,14 +76,14 @@ make
 ./build/lnpctl --version
 ```
 
-The source build is an alternative to the downloaded executable. In the commands below, substitute `./build/lnpctl` for `"$HOME/.local/bin/lnpctl"` if you built from source.
+The commands below use the Homebrew installation. For a manual download, substitute `"$HOME/.local/bin/lnpctl"` for `lnpctl`; for a source build, use `./build/lnpctl`.
 
 ## Clean up entries
 
 1. **Select in normal macOS.** Close System Settings and the applications whose entries you intend to remove, then open the picker:
 
    ```sh
-   sudo "$HOME/.local/bin/lnpctl"
+   sudo lnpctl
    ```
 
    Use the arrow keys to move, Space to select, `/` to filter, and Enter to review. Nothing is selected automatically. A missing executable is a clue, not proof that an entry should be removed.
